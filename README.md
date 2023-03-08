@@ -1,2 +1,2 @@
-# CS7641_proj
-Group Project for CS7641
+# CS7643_proj
+Group Project for CS7643
