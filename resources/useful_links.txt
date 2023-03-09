@@ -1,0 +1,20 @@
+link:
+
+ building a DL recommender:
+ https://developer.nvidia.com/blog/how-to-build-a-winning-recommendation-system-part-2-deep-learning-for-recommender-systems/
+
+
+	
+Object-Detection Based Recommendation Engine for Advertising Using Deep Learning
+https://link.springer.com/chapter/10.1007/978-981-19-5037-7_42
+
+
+RecoTour III: Variational Autoencoders for Collaborative Filtering with Mxnet and Pytorch
+https://jrzaurin.github.io/infinitoml/2020/05/15/mult-vae.html#3-$
+
+
+I saw this article that looks like an interesting implementation
+https://medium.com/analytics-vidhya/recommendation-system-using-bert-embeddings-1d8de5fc3c56 
+
+
+
