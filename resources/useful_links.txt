@@ -4,6 +4,7 @@ link:
  https://developer.nvidia.com/blog/how-to-build-a-winning-recommendation-system-part-2-deep-learning-for-recommender-systems/
 
 
+
 	
 Object-Detection Based Recommendation Engine for Advertising Using Deep Learning
 https://link.springer.com/chapter/10.1007/978-981-19-5037-7_42
