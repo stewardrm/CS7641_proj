@@ -1,0 +1,19 @@
+name: final_project
+channels:
+  - defaults
+dependencies:
+  - pip
+  - python=3.10
+  - pip:
+      - future
+      - tqdm
+      - matplotlib
+      - numpy
+      - opencv-python
+      - pillow==9.4.0
+      - pytz
+      - pyyaml
+      - pyzmq
+      - scipy
+      - torch==1.13.1
+      - torchvision==0.14.1
