@@ -30,3 +30,4 @@ movie_lens_merged=movies.join(merged.select('movie_id_lens','new_id'),how='inner
 movie_kaggle_merged = movies_long.join(merged.select('movie_id_kaggle','new_id'),how='inner',left_on = 'id',right_on='movie_id_kaggle')
 
 movie_lens_merged.write_csv('data/movie_lens_merged.csv')
+movie_kaggle_merged.write_csv('data/movies_kaggle_merged.csv')
