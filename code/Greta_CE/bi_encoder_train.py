@@ -23,7 +23,7 @@ device =torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 class BE_Model:
     def __init__(self,model_type = 'all-MiniLM-L6-v2'):
         self.model = SentenceTransformer(model_type)
-        self.model_save_path='output/bi_encoder_w_quora_CE'
+        self.model_save_path='output/bi_encoder_w_quora_CE_MNRL'
         self.dataset_path_train = './data/classification/train_pairs.tsv'
         self.dataset_path_dev = './data/classification/dev_pairs.tsv'
         self.train_samples=[]
@@ -38,24 +38,37 @@ class BE_Model:
             with open(self.dataset_path_train, 'r', encoding='utf8') as fIn:
                 reader = csv.DictReader(fIn, delimiter='\t', quoting=csv.QUOTE_NONE)
                 for row in reader:
-                    self.train_samples.append(InputExample(texts=[row['question1'], row['question2']], label=int(row['is_duplicate'])))
+                    if int(row['is_duplicate'])==1:
+                        self.train_samples.append(InputExample(texts=[row['question1'], row['question2']], label=int(row['is_duplicate'])))
 
-            #Concat CE results to Quora training dataset      
-            cross_encoder_train_samples = list(InputExample(texts=[data[0], data[1]], label=score) for (data, score) in zip(train_sentence_pairs, CE_Out))
+            #Concat CE results to Quora training dataset
+            cross_encoder_train_samples=[]
+            for (data, score) in zip(train_sentence_pairs, CE_Out):  
+              if int(score)==1:   
+                  cross_encoder_train_samples.append(InputExample(texts=[data[0], data[1]], label=int(score))) 
             self.train_samples+=cross_encoder_train_samples
-            dev_samples = []
+            # dev_samples = []
+            # with open(self.dataset_path_dev, 'r', encoding='utf8') as fIn:
+            #     reader = csv.DictReader(fIn, delimiter='\t', quoting=csv.QUOTE_NONE)
+            #     for row in reader:
+            #         self.dev_samples.append(InputExample(texts=[row['question1'], row['question2']], label=int(row['is_duplicate'])))
+
+            dev_sentences_1 = []
+            dev_sentences_2 = []
+            dev_labels = []
             with open(self.dataset_path_dev, 'r', encoding='utf8') as fIn:
                 reader = csv.DictReader(fIn, delimiter='\t', quoting=csv.QUOTE_NONE)
                 for row in reader:
-                    self.dev_samples.append(InputExample(texts=[row['question1'], row['question2']], label=int(row['is_duplicate'])))
-
-
+                    # self.dev_samples.append(InputExample(texts=[row['question1'], row['question2']], label=float(row['is_duplicate'])))
+                    dev_sentences_1.append(row['question1'])
+                    dev_sentences_2.append(row['question2'])
+                    dev_labels.append(int(row['is_duplicate']))
             #Evaluator for trained CE
             # train_dataloader = DataLoader(train_samples, shuffle=True, batch_size=train_batch_size)
-            train_dataset = SentencesDataset(self.train_samples, model)
+            train_dataset = SentencesDataset(self.train_samples, self.model)
             train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=self.train_batch_size)
-            train_loss = losses.MultipleNegativesRankingLoss(model)
-            evaluator = BinaryClassificationEvaluator.from_input_examples(dev_samples, name='Quora-dev')
+            train_loss = losses.MultipleNegativesRankingLoss(self.model)
+            evaluator = BinaryClassificationEvaluator(dev_sentences_1, dev_sentences_2, dev_labels)
             
 
 
@@ -63,7 +76,7 @@ class BE_Model:
             warmup_steps = math.ceil(len(train_dataloader) * self.num_epochs * 0.1)
 
             # Train the bi-encoder model
-            model.fit(train_objectives=[(train_dataloader, train_loss)],
+            self.model.fit(train_objectives=[(train_dataloader, train_loss)],
                       evaluator=evaluator,
                       epochs=self.num_epochs,
                       evaluation_steps=1000,
@@ -72,4 +85,4 @@ class BE_Model:
                       )
             
         else:
-          model = SentenceTransformer(self.model_save_path)
+          self.model = SentenceTransformer(self.model_save_path)
