@@ -132,10 +132,9 @@ class movie_lens_data():
         temp1 = self.genome_scores.merge(self.genome_tags, on='tagId')
         temp2 = temp1.query("relevance > 0.9")
         movie_genome_tags = temp2[['movieId', 'tag']]
-        movie_user_tags=self.tags[['movieId','tag']]
 
         #now combine the three above dataframes and clean them up
-        final_keywords=pd.concat([movie_genres,movie_genome_tags,movie_user_tags],ignore_index=True,sort=False)
+        final_keywords=pd.concat([movie_genres,movie_genome_tags],ignore_index=True,sort=False)
         final_keywords=final_keywords.drop_duplicates().reset_index(drop=True)  #remove duplicate tags
         final_keywords=final_keywords.dropna(subset=['tag']) #drop rows with NaN values
 
@@ -222,4 +221,8 @@ class movie_lens_data():
         top_indices = top_indices[:num_recommendations]
         recommended_movie_ids = self.collection_of_keywords.index[top_indices]
 
-        return self.movies[self.movies['movieId'].isin(recommended_movie_ids)]['title'].tolist()
+        recommendations=[]
+        for each in recommended_movie_ids:
+          recommendations.append(self.movies.loc[self.movies['movieId'] == each, 'title'].iloc[0])
+
+        return recommendations #
